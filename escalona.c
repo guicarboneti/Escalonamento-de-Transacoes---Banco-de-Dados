@@ -13,7 +13,7 @@ typedef struct transacao {
 
 typedef struct node {
     int index;
-    int *points_to;
+    struct node *neighbours;
 } node;
 
 void readList(transacao *list, int *tam) {
@@ -49,17 +49,24 @@ int newNode(node *list, int tam, int identificador) {
     return 1;
 }
 
-int detectCycle() {
+// DFS
+int detectCycle(node node) {
+    for(node)  // percorre os vizinhos
     return 1;
 }
 
 void criaAresta(node *list, int Ti, int Tj, int n_nodes) {
     int i, j;
+    node nodej;
+    for (i=0;i<n_nodes;i++){
+        if (list[i].index == Tj)
+            nodej = list[i];
+    }
     for (i=0; i<n_nodes; i++) {
         if (list[i].index == Ti) {
             for (j=0; j<n_nodes; j++) {
-                if (list[i].points_to[j] == 0) {
-                    list[i].points_to[j] = Tj;
+                if (list[i].neighbours[j].index == 0) {
+                    list[i].neighbours[j] = nodej;
                     break;
                 }
             }
@@ -71,7 +78,7 @@ char *seriabilidade(transacao *transacoes, int tam) {
     int i, j, m, n_nodes=0;
     node *list_nodes = (node*) malloc(tam*sizeof(node));
     for(i=0; i<tam; i++)
-        list_nodes[i].points_to = (int*) calloc(tam,sizeof(int));
+        list_nodes[i].neighbours = (node*) malloc(tam*sizeof(node));
 
      // cria um nó para cada T do escalonamento
     for (i=0, j=0; i<tam; i++) {
@@ -133,12 +140,12 @@ char *seriabilidade(transacao *transacoes, int tam) {
     for (i=0;i<n_nodes;i++) {
         printf("T%d:\n", list_nodes[i].index);
         for (j=0;j<n_nodes-1;j++) {
-            printf("%d",  list_nodes[i].points_to[j]);
+            printf("%d",  list_nodes[i].neighbours[j].index);
         }
         printf("\n");
     }
 
-    if (detectCycle())    // se há ciclo no grafo
+    if (detectCycle(list_nodes[0]))    // se há ciclo no grafo
         return "SS";   // é serial
     else
         return "NS";   // não é serial
