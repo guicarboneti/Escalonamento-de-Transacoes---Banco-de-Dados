@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #define TAM_BUFFER 20
 
 typedef struct transacao {
@@ -18,21 +19,25 @@ typedef struct node {
 void readList(transacao *list, int *tam) {
     int i;
     char line[TAM_BUFFER];
-    for (i=0; i<5;i++) {
-        fgets(line, TAM_BUFFER, stdin);
+    for (i=0; ;i++) {
+        if (!fgets(line, TAM_BUFFER, stdin))
+            break;
         sscanf(line, "%d %d %c %c", &list[i].tempo_chegada, &list[i].identificador, &list[i].operacao, &list[i].atributo);
         (*tam)++;
     }
 }
 
-void printList(transacao *list, int tam) {
+char *printList(transacao *list, int tam) {
     int i;
+    char *str, c;
+    str = malloc(tam*sizeof(char));
     for (i=0; i<tam; i++){
-        printf("%d", list[i].tempo_chegada);
-        printf(" - %d", list[i].identificador);
-        printf(" - %c", list[i].operacao);
-        printf(" - %c\n", list[i].atributo);
+        c = list[i].identificador+'0';
+        strcat(str, &c);
+        if (i<tam-1)
+            strcat(str, ",");
     }
+    return(str);
 }
 
 int newNode(node *list, int tam, int identificador) {
@@ -48,71 +53,112 @@ int detectCycle() {
     return 1;
 }
 
-void criaAresta(node *list, int Ti, int Tj, int tam) {
+void criaAresta(node *list, int Ti, int Tj, int n_nodes) {
     int i, j;
-    for (i=0; i<tam; i++) {
+    for (i=0; i<n_nodes; i++) {
         if (list[i].index == Ti) {
-            for (j=0; j<tam; j++) {
-                if (list[i].points_to[j] == 0)
+            for (j=0; j<n_nodes; j++) {
+                if (list[i].points_to[j] == 0) {
                     list[i].points_to[j] = Tj;
+                    break;
+                }
             }
         }
     }
 }
 
-int seriabilidade(transacao *transacoes, int tam) {
-    int i, j, m;
+char *seriabilidade(transacao *transacoes, int tam) {
+    int i, j, m, n_nodes=0;
     node *list_nodes = (node*) malloc(tam*sizeof(node));
     for(i=0; i<tam; i++)
         list_nodes[i].points_to = (int*) calloc(tam,sizeof(int));
 
      // cria um nó para cada T do escalonamento
-    for (i=0; i<tam; i++) {
-        if (newNode(list_nodes, tam, transacoes[i].identificador))
-            list_nodes[i].index = transacoes[i].identificador;
+    for (i=0, j=0; i<tam; i++) {
+        if (newNode(list_nodes, tam, transacoes[i].identificador)) {
+            n_nodes++;
+            list_nodes[j].index = transacoes[i].identificador;
+            j++;
+        }
     }
 
     // cria aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti
-    for (i=0; i<tam; i++) {     // percorre os nós T
+    for (i=0; i<n_nodes; i++) {     // percorre os nós T
         int Ti = list_nodes[i].index;
         if (Ti == 0)
             break;
-        
         for (j=0; j<tam-1; j++) {     // percorre a lista de transacoes
-            if (transacoes[j].identificador==Ti && transacoes[j].operacao=='R') {
+            if (transacoes[j].identificador==Ti && transacoes[j].operacao=='W') {
                 for (m=j+1; m<tam; m++) {
-                    if (transacoes[m].identificador != Ti && transacoes[m].operacao=='W' && transacoes[j].atributo == transacoes[m].atributo)
-                        criaAresta(list_nodes, Ti, transacoes[m].identificador, tam);
+                    if (transacoes[m].identificador != Ti && transacoes[m].operacao=='R' && transacoes[j].atributo == transacoes[m].atributo){
+                        criaAresta(list_nodes, Ti, transacoes[m].identificador, n_nodes);
+                    }
                 }
             }
         }
     }
 
-    for (i=0;i<tam;i++) {
-        if (list_nodes[i].index==0)
+    // cria aresta Ti -> Tj para cada w(x) em Tj depois de r(x) em Ti
+    for (i=0; i<n_nodes; i++) {     // percorre os nós T
+        int Ti = list_nodes[i].index;
+        if (Ti == 0)
             break;
+        for (j=0; j<tam-1; j++) {     // percorre a lista de transacoes
+            if (transacoes[j].identificador==Ti && transacoes[j].operacao=='R') {
+                for (m=j+1; m<tam; m++) {
+                    if (transacoes[m].identificador != Ti && transacoes[m].operacao=='W' && transacoes[j].atributo == transacoes[m].atributo){
+                        criaAresta(list_nodes, Ti, transacoes[m].identificador, n_nodes);
+                    }
+                }
+            }
+        }
+    }
+
+    // cria aresta Ti -> Tj para cada w(x) em Tj depois de w(x) em Ti
+    for (i=0; i<n_nodes; i++) {     // percorre os nós T
+        int Ti = list_nodes[i].index;
+        if (Ti == 0)
+            break;
+        for (j=0; j<tam-1; j++) {     // percorre a lista de transacoes
+            if (transacoes[j].identificador==Ti && transacoes[j].operacao=='W') {
+                for (m=j+1; m<tam; m++) {
+                    if (transacoes[m].identificador != Ti && transacoes[m].operacao=='W' && transacoes[j].atributo == transacoes[m].atributo){
+                        criaAresta(list_nodes, Ti, transacoes[m].identificador, n_nodes);
+                    }
+                }
+            }
+        }
+    }
+
+    for (i=0;i<n_nodes;i++) {
         printf("T%d:\n", list_nodes[i].index);
-        for (j=0;j<tam;j++) {
+        for (j=0;j<n_nodes-1;j++) {
             printf("%d",  list_nodes[i].points_to[j]);
         }
         printf("\n");
     }
 
     if (detectCycle())    // se há ciclo no grafo
-        return 1;   // é serial
+        return "SS";   // é serial
     else
-        return 0;   // não é serial
+        return "NS";   // não é serial
+}
+
+char *visao(transacao *transacoes, int tam) {
+
+    if (1)
+        return "SV";   // é equivalente
+    else
+        return "NV";   // não é equivalente
 }
 
 int main() {
-    int i, tam_list=0;
+    int i, tam_list=0, n_escalonamentos=1;
     transacao *lista_transacoes = malloc (TAM_BUFFER * sizeof(transacao)) ;
     readList(lista_transacoes, &tam_list);
-    if (seriabilidade(lista_transacoes, tam_list))
-        printf("É serial\n");
-    else
-        printf("Não é serial\n");
-
-    printList(lista_transacoes, tam_list);
+    // separaEscalonamentos()  // funcao para separar os escalonamentos em listas -----> a fazer
+    for (i=0; i<n_escalonamentos; i++)
+        printf("%d, %s, %s, %s\n", i+1, printList(lista_transacoes, tam_list), seriabilidade(lista_transacoes, tam_list), visao(lista_transacoes, tam_list));
+        
     return 0;
 }
