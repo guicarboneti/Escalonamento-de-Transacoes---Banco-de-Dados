@@ -9,6 +9,7 @@ typedef struct escalonamento {
 typedef struct transacao {
     int tempo_chegada;
     int identificador;
+    int qtd_operacoes;
     char operacao;
     char atributo;
 

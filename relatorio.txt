@@ -1,0 +1,17 @@
+### Algoritmo de Visão por equivalência
+A função "visão" recebe como parâmetro a lista de transações do escalonamento e o número total de operações, então dentro 
+da função as transações são separadas por id, organizando-as em lista, desse modo temos quais operações são referentes a 
+cada transação. Em seguida serão criadas duas matrizes que irão armazenar os atributos escritos e lidos de cada transação 
+presente no escalonamento. Também são criados dois vetores para armazenar o número de operações de leitura e escrita.
+Então, é verificado se todas as operações de leitura de cada transação já foram escritas por outras transações. Isso é
+feito verificando as operações de leitura de cada transação na matriz de leitura. Para cada operação de leitura,todas as 
+transações são percorridas, exceto a transação que executou a operação de leitura, para ver se o valor foi escrito. Se o
+valor foi escrito, a variável "escrito" é definida como verdadeiro e interrompe o loop interno. Se o valor não foi 
+escrito, a função retorna "NV", indicando que as transações não são equivalentes por visão.
+Por fim, o código verifica se todas as operações de escrita de cada transação foram as últimas operações de escrita para os 
+valores que eles escreveram. Isso é feito percorrendo as operações de escrita de cada transação na matriz de escrita. Para 
+cada operação de escrita, o código percorre todas as transações, exceto a transação que executou a operação de escrita, para
+ver se o valor foi escrito por outra transação. Se o valor foi escrito por outra transação, a função retorna "NV", indicando
+que as transações não são equivalentes por visão.
+Se a função chegar ao final, significa que as transações atendem às condições e ela retorna "SV", indicando que as transações
+são equivalentes por visão.
