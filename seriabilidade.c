@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "seriabilidade.h"
 #include "escalona.h"
 
@@ -7,12 +8,35 @@ int DFS(node *G, node *v, int n_nodes) {    // retorna 0 se há ciclo, 1 caso co
     v->visited = 1;
     for (i=0; i<n_nodes-1; i++)
         if (v->neighbours[i].index == 0)
-            return 1;
+            v->visited = 0;
         else if (v->neighbours[i].visited)
             return 0;
         else if (!DFS(G, &v->neighbours[i], n_nodes))
             return 0;
 
+    return 1;
+}
+
+void criaAresta(node *list, int Ti, int Tj, int n_nodes) {
+    int i, j;
+    node nodej;
+    for (i=0;i<n_nodes;i++)
+        if (list[i].index == Tj)
+            nodej = list[i];
+    for (i=0; i<n_nodes; i++)
+        if (list[i].index == Ti)
+            for (j=0; j<n_nodes; j++)
+                if (list[i].neighbours[j].index == 0) {
+                    list[i].neighbours[j] = nodej;
+                    break;
+                }
+}
+
+int newNode(node *list, int tam, int identificador) {
+    int i;
+    for(i=0; i<tam; i++)
+        if (list[i].index == identificador)
+            return 0;
     return 1;
 }
 
@@ -60,8 +84,8 @@ char *seriabilidade(transacao *transacoes, int tam) {
                         criaAresta(list_nodes, Ti, transacoes[m].identificador, n_nodes);
     }
 
-    if (DFS(list_nodes, &list_nodes[0], n_nodes))    // busca em profundidade para detectar ciclo 
-        return "SS";   // é serial
-    else
-        return "NS";   // não é serial
+    for (i=0; i<n_nodes; i++)
+        if (!DFS(list_nodes, &list_nodes[i], n_nodes))    // busca em profundidade para detectar ciclo 
+            return "NS";   // não é serial
+    return "SS";   // é serial
 }

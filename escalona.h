@@ -23,8 +23,6 @@ typedef struct node {
 
 void readList(transacao *list, int *tam);
 char *printList(transacao *list, int tam);
-int newNode(node *list, int tam, int identificador);
-void criaAresta(node *list, int Ti, int Tj, int n_nodes);
 void separaEscalonamentos(transacao *lista, escalonamento *esc, int *n_esc, int tam);
 
 #endif

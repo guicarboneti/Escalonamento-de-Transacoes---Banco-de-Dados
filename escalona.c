@@ -4,7 +4,7 @@
 #include "escalona.h"
 #include "seriabilidade.h"
 #include "visao.h"
-#define TAM_BUFFER 20
+#define TAM_BUFFER 200
 
 void readList(transacao *list, int *tam) {
     int i;
@@ -18,9 +18,12 @@ void readList(transacao *list, int *tam) {
 }
 
 char *printList(transacao *list, int tam) {
-    int i, j, list_ids[tam], printed, idx_id=0;
-    char *str, c;
+    int i, j, *list_ids, printed, idx_id=0, min, aux;
+    char *str, *c;
     str = malloc(tam*sizeof(char));
+    c = malloc(3*sizeof(char));
+    list_ids = calloc(tam, sizeof(char));
+    // select numbers
     for (i=0; i<tam; i++) {
         printed = 0;
         for (j=0;j<idx_id;j++)
@@ -31,36 +34,26 @@ char *printList(transacao *list, int tam) {
         if (!printed)
             list_ids[idx_id++] = list[i].identificador;
     }
+    // sort array
+    for (i=0; i<idx_id-1; i++) {
+        min = i;
+        for (j=i+1; j<idx_id; j++)
+            if (list_ids[j] < list_ids[min]) 
+                min = j;
+        if (i != min) {
+            aux = list_ids[i];
+            list_ids[i] = list_ids[min];
+            list_ids[min] = aux;
+        }
+    }
+    // convert to string
     for (i=0; i<idx_id; i++){
-        c = list_ids[i]+'0';
-        strcat(str, &c);
+        sprintf(c, "%d", list_ids[i]);
+        strcat(str, c);
         if (i<idx_id-1)
             strcat(str, ",");
     }
     return(str);
-}
-
-int newNode(node *list, int tam, int identificador) {
-    int i;
-    for(i=0; i<tam; i++)
-        if (list[i].index == identificador)
-            return 0;
-    return 1;
-}
-
-void criaAresta(node *list, int Ti, int Tj, int n_nodes) {
-    int i, j;
-    node nodej;
-    for (i=0;i<n_nodes;i++)
-        if (list[i].index == Tj)
-            nodej = list[i];
-    for (i=0; i<n_nodes; i++)
-        if (list[i].index == Ti)
-            for (j=0; j<n_nodes; j++)
-                if (list[i].neighbours[j].index == 0) {
-                    list[i].neighbours[j] = nodej;
-                    break;
-                }
 }
 
 void separaEscalonamentos(transacao *lista, escalonamento *esc, int *n_esc, int tam) {
@@ -79,11 +72,10 @@ void separaEscalonamentos(transacao *lista, escalonamento *esc, int *n_esc, int 
         if (lista[i].atributo == '-') {
             for (j=0; j<idx_ids; j++) {
                 if (lista[i].identificador == list_ids[j]) {
-                    if (list_ids[j+1] == 0) {
+                    if (idx_ids == 1)
                         list_ids[j] = 0;
-                        for (m=j; m<idx_ids-1; m++) 
-                            list_ids[m] = list_ids[m+1];
-                    }
+                    for (m=j; m<idx_ids-1; m++) 
+                        list_ids[m] = list_ids[m+1];
                     idx_ids--;
                     break;
                 }
@@ -105,7 +97,8 @@ int main() {
     for (i=0; i<n_escalonamentos; i++) {
         ini = escalonamentos[i].begin;
         tam_tra = escalonamentos[i].end - escalonamentos[i].begin + 1;
-        printf("%d %s %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra), visao(&lista_transacoes[ini], tam_tra));
+        // printf("%d %s %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra), visao(&lista_transacoes[ini], tam_tra));
+        printf("%d %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra));
     }
         
     free(lista_transacoes);
