@@ -15,12 +15,6 @@ typedef struct transacao {
 
 } transacao;
 
-typedef struct node {
-    int index;
-    struct node *neighbours;
-    int visited;
-} node;
-
 void readList(transacao *list, int *tam);
 char *printList(transacao *list, int tam);
 void separaEscalonamentos(transacao *lista, escalonamento *esc, int *n_esc, int tam);

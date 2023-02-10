@@ -1,3 +1,30 @@
+### Estruturas de dados
+ #### Estrutura de Escalonamento:
+    Um Escalonamento possui dois inteiros begin e end que indetificam o espaço que cada escalonamento possui na lista dada na entrada.
+
+ #### Estrutura de Transação:
+    Cada Transação possui os inteiros 'tempo_chegada', 'identificador', 'qtd_operacoes' e os char 'operacao' e 'atributo'.
+
+ #### Estrutura de Nó:
+    Um Nó possui um inteiro 'index' que identifica o nó, uma lista de nós vizinhos 'neighbours' e uma flag 'visited' que indica se o nó já foi percorrido.
+
+### Separa Escalonamentos
+A função "separaEscalonamentos" recebe uma lista de transações que é dada na entrada do programa e identifica onde começa e termina cada escalonamento da lista, armazenando essas informações em uma lista de escalonamentos, omde cada posição da lista corresponde a um escalonamento na lista de transações. Retorna também o número total de escalonamentos.
+
+### Algoritmo de Teste de Seriabilidade quanto ao conflito
+A função "seriabilidade" recebe como parâmetro a lista de transações do escalonamento e o número total de operações.
+É criado um grafo, que consiste em uma lista de nós, onde cada nó possui uma lista de ponteiros para seus nós vizinhos.
+Inicialmente, é criado um nó para cada transação do escalonamento.
+Em seguida, o algoritmo executa dois laços ininhados, onde o laço exterior percorre os nós do grafo e o laço interno percorre a lista de transações do escalonamento.
+Dentro desse laço, o algoritmo executa 3 operações principais:
+    * cria uma aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti;
+    * cria uma aresta Ti -> Tj para cada w(x) em Tj depois de r(x) em Ti;
+    * cria uma aresta Ti -> Tj para cada w(x) em Tj depois de w(x) em Ti;
+Essas operações computam de forma similar entre si. Cada uma possui um teste para identificar se Ti executa a operação correspondente e internamente executa um laço que percorre as operações seguintes, buscando uma transação que execute a operação desejada pelo teste.
+Quando é encontrada uma operação que passa nos testes, é criada uma aresta entre os dois nós do grafo que corresponem às transações Ti e Tj envolvidas.
+Dessa forma, para cada nó do grafo, os 3 testes são executados percorrendo seus vizinhos.
+Após percorrer todos os nós, a função "DFS" é utilizada para identificar um ciclo no grafo. "DFS" é uma busca em profundidade que percorre as arestas do grafo marcando os nós visitados e caso chegue em um nó já visitado é identificado um ciclo. Se há ciclo no grafo, a função "Seriabilidade" retorna "NS" indicando que o escalonamento não é serial, caso contrário retorna "SS" indicando que o escalonamento é de fato serial.
+
 ### Algoritmo de Visão por equivalência
 A função "visão" recebe como parâmetro a lista de transações do escalonamento e o número total de operações, então dentro 
 da função as transações são separadas por id, organizando-as em lista, desse modo temos quais operações são referentes a 
