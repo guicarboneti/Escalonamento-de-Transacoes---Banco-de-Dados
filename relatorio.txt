@@ -1,6 +1,9 @@
+Relatório Trabalho de Escalonamento de Transações - Banco de dados
+Cristiano Creppo Mendieta, Guilherme Carbonari Boneti
+
 ### Estruturas de dados
  #### Estrutura de Escalonamento:
-    Um Escalonamento possui dois inteiros begin e end que indetificam o espaço que cada escalonamento possui na lista dada na entrada.
+    Um Escalonamento possui dois inteiros begin e end que identificam o espaço que cada escalonamento possui na lista dada na entrada.
 
  #### Estrutura de Transação:
     Cada Transação possui os inteiros 'tempo_chegada', 'identificador', 'qtd_operacoes' e os char 'operacao' e 'atributo'.
@@ -9,13 +12,13 @@
     Um Nó possui um inteiro 'index' que identifica o nó, uma lista de nós vizinhos 'neighbours' e uma flag 'visited' que indica se o nó já foi percorrido.
 
 ### Separa Escalonamentos
-A função "separaEscalonamentos" recebe uma lista de transações que é dada na entrada do programa e identifica onde começa e termina cada escalonamento da lista, armazenando essas informações em uma lista de escalonamentos, omde cada posição da lista corresponde a um escalonamento na lista de transações. Retorna também o número total de escalonamentos.
+A função "separaEscalonamentos" recebe uma lista de transações que é dada na entrada do programa e identifica onde começa e termina cada escalonamento da lista, armazenando essas informações em uma lista de escalonamentos, onde cada posição da lista corresponde a um escalonamento na lista de transações. Retorna também o número total de escalonamentos.
 
 ### Algoritmo de Teste de Seriabilidade quanto ao conflito
 A função "seriabilidade" recebe como parâmetro a lista de transações do escalonamento e o número total de operações.
 É criado um grafo, que consiste em uma lista de nós, onde cada nó possui uma lista de ponteiros para seus nós vizinhos.
 Inicialmente, é criado um nó para cada transação do escalonamento.
-Em seguida, o algoritmo executa dois laços ininhados, onde o laço exterior percorre os nós do grafo e o laço interno percorre a lista de transações do escalonamento.
+Em seguida, o algoritmo executa dois laços aninhados, onde o laço exterior percorre os nós do grafo e o laço interno percorre a lista de transações do escalonamento.
 Dentro desse laço, o algoritmo executa 3 operações principais:
     * cria uma aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti;
     * cria uma aresta Ti -> Tj para cada w(x) em Tj depois de r(x) em Ti;
@@ -28,7 +31,7 @@ Após percorrer todos os nós, a função "DFS" é utilizada para identificar um
 ### Algoritmo de Visão por equivalência
 A função "visão" recebe como parâmetro a lista de transações do escalonamento e o número total de operações, então dentro 
 da função as transações são separadas por id, organizando-as em lista, desse modo temos quais operações são referentes a 
-cada transação. Em seguida serão criadas duas matrizes que irão armazenar os atributos escritos e lidos de cada transação 
+cada transação. Em seguida, serão criadas duas matrizes que irão armazenar os atributos escritos e lidos de cada transação 
 presente no escalonamento. Também são criados dois vetores para armazenar o número de operações de leitura e escrita.
 Então, é verificado se todas as operações de leitura de cada transação já foram escritas por outras transações. Isso é
 feito verificando as operações de leitura de cada transação na matriz de leitura. Para cada operação de leitura,todas as 
