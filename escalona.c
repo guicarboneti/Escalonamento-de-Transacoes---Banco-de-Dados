@@ -97,8 +97,7 @@ int main() {
     for (i=0; i<n_escalonamentos; i++) {
         ini = escalonamentos[i].begin;
         tam_tra = escalonamentos[i].end - escalonamentos[i].begin + 1;
-        // printf("%d %s %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra), visao(&lista_transacoes[ini], tam_tra));
-        printf("%d %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra));
+        printf("%d %s %s %s\n", i+1, printList(&lista_transacoes[ini], tam_tra), seriabilidade(&lista_transacoes[ini], tam_tra), visao(&lista_transacoes[ini], tam_tra));
     }
         
     free(lista_transacoes);

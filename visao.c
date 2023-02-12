@@ -5,7 +5,7 @@
 
 #define READ 'R'
 #define WRITE 'W'
-#define MAX_TRANSACTIONS 150
+#define MAX_TRANSACTIONS 200
 
 char *visao(transacao *transacoes, int num_operacoes)
 {
@@ -35,8 +35,8 @@ char *visao(transacao *transacoes, int num_operacoes)
         }
     }
     // cria duas matrizes para armazenar os atributos escritos e lidos para cada transação no escalonamento
-    int writes[qtd_transacoes][num_operacoes];
-    int reads[qtd_transacoes][num_operacoes];
+    int writes[MAX_TRANSACTIONS][MAX_TRANSACTIONS];
+    int reads[MAX_TRANSACTIONS][MAX_TRANSACTIONS];
 
     // cria dois vetores para armazenar número de leituras e escritas por vetor
     int *cont_escrita = calloc(MAX_TRANSACTIONS, sizeof(int));
